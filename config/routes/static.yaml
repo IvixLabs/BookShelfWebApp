@@ -1,0 +1,11 @@
+main_page:
+  path:          /
+  controller:    Symfony\Bundle\FrameworkBundle\Controller\TemplateController
+  defaults:
+    template:  'static/index.html.twig'
+
+info_page:
+  path:          /info
+  controller:    Symfony\Bundle\FrameworkBundle\Controller\TemplateController
+  defaults:
+    template:  'static/info.html.twig'
