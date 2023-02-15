@@ -6,9 +6,9 @@ namespace App\Dto;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class FormBook
+class FormBookDto
 {
-    public string $id;
+    public ?string $id = null;
 
     #[Assert\NotBlank]
     public ?string $name = null;
@@ -16,9 +16,6 @@ class FormBook
     #[Assert\NotBlank]
     public ?string $description = null;
 
-    public function __construct()
-    {
-        $this->id = Uuid::uuid4()->toString();
-    }
-
+    #[Assert\NotBlank]
+    public ?RefAuthorDto $author = null;
 }

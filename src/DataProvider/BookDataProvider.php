@@ -5,14 +5,27 @@ namespace App\DataProvider;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use App\Dto\UserBook;
+use App\Dto\FormBookDto;
+use App\Dto\ListBookDto;
+use App\Mapper\AuthorDtoMapper;
+use App\Mapper\BookDtoMapper;
+use App\Repository\AuthorRepositoryInterface;
+use App\Repository\BookRepositoryInterface;
 
 class BookDataProvider implements ProviderInterface
 {
+    public function __construct(
+        private BookRepositoryInterface $bookRepository,
+        private BookDtoMapper $bookDtoMapper,
+    )
+    {
+
+    }
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
     {
-        return new UserBook(''.$uriVariables['id'], 'Hello from user book ' . $uriVariables['id']);
+        $book = $this->bookRepository->getBook($uriVariables['id']);
+        return $this->bookDtoMapper->getFormBookDto($book);
     }
 
 }

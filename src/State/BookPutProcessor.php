@@ -5,17 +5,32 @@ namespace App\State;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
-use App\Dto\FormBook;
+use App\Dto\FormBookDto;
+use App\Mapper\BookDtoMapper;
+use App\Repository\BookRepositoryInterface;
 
 class BookPutProcessor implements ProcessorInterface
 {
+
+
+    public function __construct(
+        private BookRepositoryInterface $bookRepository,
+        private BookDtoMapper $bookDtoMapper
+    )
+    {
+    }
+
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
-        if($data instanceof FormBook) {
+        if($data instanceof FormBookDto) {
 
-            $data->name .= ' Updated';
+            $book = $this->bookRepository->getBook($uriVariables['id']);
 
-            return;
+            $this->bookDtoMapper->initByFormBookDto($book, $data);
+
+            $this->bookRepository->saveBook($book);
+
+            return $data;
         }
 
         throw new \InvalidArgumentException('Wrong income data');

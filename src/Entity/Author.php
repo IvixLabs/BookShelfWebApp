@@ -3,14 +3,16 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
-use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\DataProvider\AuthorSuggestionsProvider;
+use App\Dto\RefAuthorDto;
+use App\Filter\AuthorListFilter;
+use App\Filter\AuthorSuggestionFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
@@ -18,20 +20,24 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
     operations: [
+        new GetCollection(
+            uriTemplate: '/authors/suggestions',
+            security: "is_granted('ROLE_ADMIN')",
+            filters: [AuthorSuggestionFilter::class],
+            output: RefAuthorDto::class,
+            provider: AuthorSuggestionsProvider::class,
+        ),
         new Get(security: "is_granted('ROLE_ADMIN')"),
         new GetCollection(
             paginationMaximumItemsPerPage: 50,
             paginationClientItemsPerPage: true,
-            security: "is_granted('ROLE_ADMIN')"
+            security: "is_granted('ROLE_ADMIN')",
+            filters:[AuthorListFilter::class]
         ),
         new Post(security: "is_granted('ROLE_ADMIN')"),
         new Put(security: "is_granted('ROLE_ADMIN')"),
         new Delete(security: "is_granted('ROLE_ADMIN')")
     ],
-)]
-#[ApiFilter(
-    SearchFilter::class,
-    properties: [Author::PROP_FIRST_NAME => SearchFilter::STRATEGY_START]
 )]
 #[ORM\Entity]
 #[ORM\UniqueConstraint(
@@ -59,7 +65,7 @@ class Author
     private string $firstName;
 
     #[ORM\Column(length: 50, nullable: true)]
-    private string $middleName;
+    private ?string $middleName = null;
 
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank]
@@ -86,12 +92,12 @@ class Author
         $this->firstName = $firstName;
     }
 
-    public function getMiddleName(): string
+    public function getMiddleName(): ?string
     {
         return $this->middleName;
     }
 
-    public function setMiddleName(string $middleName): void
+    public function setMiddleName(?string $middleName): void
     {
         $this->middleName = $middleName;
     }
