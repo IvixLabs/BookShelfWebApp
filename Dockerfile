@@ -66,4 +66,4 @@ RUN rm -rf var/*
 COPY docker/www.conf /etc/php81/php-fpm.d/www.conf
 COPY docker/default.conf /etc/nginx/http.d/default.conf
 
-CMD sudo -u nobody bin/console doctrine:database:create --if-not-exists && sudo -u nobody bin/console doctrine:schema:update --force && php-fpm81 && nginx -g 'daemon off;'
+CMD sudo -u nobody bin/console doctrine:database:create --if-not-exists && sudo -u nobody bin/console doctrine:schema:update --force && rm -rf var/cache/* &&  php-fpm81 && nginx -g 'daemon off;'
